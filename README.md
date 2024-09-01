@@ -24,6 +24,16 @@ How will data be represented?
 
 ### References
 
+#### ja3 and ja4 attributes:
+
+https://github.com/salesforce/ja3?tab=readme-ov-file#how-it-works
+https://github.com/FoxIO-LLC/ja4/blob/main/technical_details/JA4.md
+
+#### OpenSSL code:
+
 https://github.com/apache/trafficserver/blob/36da45475db02790b95d615a690b91170aa2f06c/plugins/ja3_fingerprint/ja3_fingerprint.cc
 https://docs.openssl.org/1.1.1/man3/SSL_CTX_set_client_hello_cb/#name
+
+#### Apache code:
+
 bin2hex function: https://nightlies.apache.org/httpd/trunk/doxygen/group__ProxyReq.html#gafb84a149e70d4197fc79306cff502dc6
