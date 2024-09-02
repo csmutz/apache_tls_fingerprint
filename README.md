@@ -1,5 +1,5 @@
 # apache_tls_fingerprint
-Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes necessary for ja3 and ja4 and any others we deep important
+Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes necessary for ja3 and ja4
 
 ## Notes
 
@@ -7,20 +7,20 @@ Metadata Required:
 
   - SSLVersion
     - Version already exposed in mod_ssl is version negotiated which may be different from client proposed?
-  - Signature Algorithms
-  - Cipher
+  - Ciphers
   - SSLExtension
+  - Signature Algorithms
   - EllipticCurve
   - EllipticCurvePointFormat
   - ALPN
     - Expose as CSV of strings?
   - ~~SNI/Server_name~~ (Already in mod_ssl)
-  - Protocol (tcp or quic) (presumably this already available through an existing variable, for moment unnecessary as tcp can be assumed?)
+  - Protocol (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp)
 
 How will data be represented? 
   - As hex of raw values (prefered approach)
   - dash separate list, ja3 style (this is a bunch of extra work, for little benefit)
-  - 
+  - Remove grease or not? Use of grease seemes like the sort of attribute you want for fingerprinting. Expose all data, including grease, and let the user of the metadata decide how they want to use it.
 
 ### References
 
