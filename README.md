@@ -6,7 +6,8 @@ Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes n
 Metadata Required:
 
   - SSLVersion
-    - Version already exposed in mod_ssl is version negotiated which may be different from client proposed?
+    - Version already exposed in mod_ssl is version negotiated is different from that offered by the client in the client hello
+      - https://docs.openssl.org/1.1.1/man3/SSL_get_version/#name
   - Ciphers
   - SSLExtension
   - Signature Algorithms
