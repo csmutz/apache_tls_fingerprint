@@ -37,3 +37,8 @@ https://docs.openssl.org/1.1.1/man3/SSL_CTX_set_client_hello_cb/#name
 #### Apache code:
 
 bin2hex function: https://nightlies.apache.org/httpd/trunk/doxygen/group__ProxyReq.html#gafb84a149e70d4197fc79306cff502dc6
+
+#### Debian Packaging:
+https://www.linuxjournal.com/content/rebuilding-and-modifying-debian-packages
+https://wiki.debian.org/UsingQuilt
+
