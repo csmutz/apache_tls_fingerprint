@@ -5,7 +5,7 @@ Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes n
 
 Metadata Required:
 
-  - Done: SSLVersion
+  - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) 
     - Version already exposed in mod_ssl is version negotiated is different from that offered by the client in the client hello
       - https://docs.openssl.org/1.1.1/man3/SSL_get_version/#name
   - Ciphers
@@ -28,16 +28,18 @@ How will data be represented?
 #### ja3 and ja4 attributes:
 
 https://github.com/salesforce/ja3?tab=readme-ov-file#how-it-works
+
 https://github.com/FoxIO-LLC/ja4/blob/main/technical_details/JA4.md
 
 #### OpenSSL code:
 
 https://github.com/apache/trafficserver/blob/36da45475db02790b95d615a690b91170aa2f06c/plugins/ja3_fingerprint/ja3_fingerprint.cc
+
 https://docs.openssl.org/1.1.1/man3/SSL_CTX_set_client_hello_cb/#name
 
 #### Apache code:
 
-bin2hex function: https://nightlies.apache.org/httpd/trunk/doxygen/group__ProxyReq.html#gafb84a149e70d4197fc79306cff502dc6
+https://nightlies.apache.org/httpd/trunk/doxygen/group__APR__Util__Escaping.html#gac87b3c2f42fb60f6ea4d8321e60ce69e
 
 #### Debian Packaging:
 https://www.linuxjournal.com/content/rebuilding-and-modifying-debian-packages
