@@ -23,6 +23,14 @@ How will data be represented?
   - dash separate list, ja3 style (this is a bunch of extra work, for little benefit)
   - Remove grease or not? Use of grease seemes like the sort of attribute you want for fingerprinting. Expose all data, including grease, and let the user of the metadata decide how they want to use it.
 
+### Access to Handshake information
+
+Handshake information is only available during handshake callback. mod_ssl already registers handshake callback for SNI.
+
+ - Callback occurs in ssl_engine_kernel.c ssl_callback_ClientHello()
+ - Add handshake information to SSLConnRec structure
+   - retrieve from conn via ssl_get_effective_config() ?
+
 ### References
 
 #### ja3 and ja4 attributes:
