@@ -12,21 +12,42 @@ Last-Update: 2024-09-03 <YYYY-MM-DD, last update of the meta-information, option
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/modules/ssl/ssl_engine_kernel.c
 +++ b/modules/ssl/ssl_engine_kernel.c
-@@ -1515,6 +1515,7 @@
+@@ -1515,6 +1515,8 @@
      "SSL_SRP_USER",
      "SSL_SRP_USERINFO",
  #endif
 +    "SSL_CLIENTHELLO_VERSION",
++    "SSL_CLIENTHELLO_CIPHERS",
      NULL
  };
  
+@@ -2495,6 +2497,19 @@
+ 
+ give_up:
+     init_vhost(c, ssl, servername);
++    
++    SSLConnRec *sslcon;
++    modssl_clienthello_vars *clienthello_vars;
++    const unsigned char *data;
++
++    sslcon = myConnConfig(c);
++    sslcon->clienthello_vars = apr_palloc(c->pool, sizeof(*clienthello_vars));
++    clienthello_vars = sslcon->clienthello_vars;
++    
++    if (clienthello_vars) {
++        clienthello_vars->ciphers_len = SSL_client_hello_get0_ciphers(ssl, &data);
++        clienthello_vars->ciphers_data = apr_pmemdup(c->pool, data, clienthello_vars->ciphers_len);
++    }
+     return SSL_CLIENT_HELLO_SUCCESS;
+ }
+ #endif /* OPENSSL_VERSION_NUMBER < 0x10101000L */
 --- a/modules/ssl/ssl_engine_vars.c
 +++ b/modules/ssl/ssl_engine_vars.c
 @@ -53,6 +53,7 @@
  static char *ssl_var_lookup_ssl_cipher(apr_pool_t *p, SSLConnRec *sslconn, char *var);
  static void  ssl_var_lookup_ssl_cipher_bits(SSL *ssl, int *usekeysize, int *algkeysize);
  static char *ssl_var_lookup_ssl_version(apr_pool_t *p, char *var);
-+static char *ssl_var_lookup_ssl_clienthello(apr_pool_t *p, SSL *ssl, char *var);
++static char *ssl_var_lookup_ssl_clienthello(apr_pool_t *p, SSLConnRec *sslconn, char *var);
  static char *ssl_var_lookup_ssl_compress_meth(SSL *ssl);
  
  static SSLConnRec *ssl_get_effective_config(conn_rec *c)
@@ -35,20 +56,38 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
          result = ssl_var_lookup_ssl_cipher(p, sslconn, var+6);
      }
 +    else if (ssl != NULL && strlen(var) >= 12 && strcEQn(var, "CLIENTHELLO_", 12)) {
-+        result = ssl_var_lookup_ssl_clienthello(p, ssl, var+12);
++        result = ssl_var_lookup_ssl_clienthello(p, sslconn, var+12);
 +    }
      else if (ssl != NULL && strlen(var) > 18 && strcEQn(var, "CLIENT_CERT_CHAIN_", 18)) {
          sk = SSL_get_peer_cert_chain(ssl);
          result = ssl_var_lookup_ssl_cert_chain(p, sk, var+18);
-@@ -867,6 +871,19 @@
+@@ -867,6 +871,37 @@
      return result;
  }
  
-+static char *ssl_var_lookup_ssl_clienthello(apr_pool_t *p, SSL *ssl, char *var)
++static char *ssl_var_lookup_ssl_clienthello(apr_pool_t *p, SSLConnRec *sslconn, char *var)
 +{
 +#if OPENSSL_VERSION_NUMBER >= 0x10101000L
++    apr_size_t len;
++    const unsigned char *buf;
++    char *value;
++    SSL *ssl;
++    modssl_clienthello_vars *clienthello_vars;
++
++    ssl = sslconn->ssl;
++    clienthello_vars = sslconn->clienthello_vars;
++
++    if (!clienthello_vars)
++        return NULL; 
++
 +    if (ssl && strEQ(var, "VERSION")) {
 +        return apr_itoa(p, SSL_client_version(ssl));
++    } else if (ssl && strEQ(var, "CIPHERS")) {
++        //len = SSL_client_hello_get0_ciphers(ssl, &buf);
++        //value = apr_pcalloc(p, len * 2 + 1);
++        //ap_bin2hex(buf, len, value);
++        //return value;
++        return apr_itoa(p, (int) clienthello_vars->ciphers_len);
 +    }
 +#endif
 +    return NULL;
@@ -60,3 +99,34 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  static void ssl_var_lookup_ssl_cipher_bits(SSL *ssl, int *usekeysize, int *algkeysize)
  {
      MODSSL_SSL_CIPHER_CONST SSL_CIPHER *cipher;
+--- a/modules/ssl/ssl_private.h
++++ b/modules/ssl/ssl_private.h
+@@ -583,6 +583,17 @@
+     SSL_SHUTDOWN_TYPE_ACCURATE
+ } ssl_shutdown_type_e;
+ 
++/**
++ * Define the structure to hold clienthello variables
++ * (later exposed as environment vars)
++ */
++#if OPENSSL_VERSION_NUMBER >= 0x10101000L
++typedef struct {
++    apr_size_t ciphers_len;
++    const unsigned char *ciphers_data;
++} modssl_clienthello_vars;
++#endif
++
+ typedef struct {
+     SSL *ssl;
+     const char *client_dn;
+@@ -613,6 +624,10 @@
+     const char *cipher_suite; /* cipher suite used in last reneg */
+     int service_unavailable;  /* thouugh we negotiate SSL, no requests will be served */
+     int vhost_found;          /* whether we found vhost from SNI already */
++
++#if OPENSSL_VERSION_NUMBER >= 0x10101000L
++    modssl_clienthello_vars *clienthello_vars;  /* info from clienthello callback */
++#endif
+ } SSLConnRec;
+ 
+ /* BIG FAT WARNING: SSLModConfigRec has unusual memory lifetime: it is
