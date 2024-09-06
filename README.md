@@ -8,7 +8,7 @@ Metadata Required:
   - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) 
     - Version already exposed in mod_ssl is version negotiated is different from that offered by the client in the client hello
       - https://docs.openssl.org/1.1.1/man3/SSL_get_version/#name
-  - Ciphers
+  - Ciphers (close, have ciphers_len printed)
   - SSLExtension
   - Signature Algorithms
   - EllipticCurve
@@ -27,10 +27,13 @@ How will data be represented?
 
 Handshake information is only available during handshake callback. mod_ssl already registers handshake callback for SNI.
 
- - Callback occurs in ssl_engine_kernel.c ssl_callback_ClientHello()
- - Add handshake information to SSLConnRec structure? It is available during handshake callback?
-   - retrieve from sslconn via ssl_get_effective_config() or SSLConnRec *sslcon = myConnConfig(c) ?
-   - if not, handshake info has be stored against conn_rec?
+ - During callback we allocate new modssl_clienthello_vars struct (using connection mem pool) that is child of SSLConnRec and populate raw values from SSL clienthello functions
+     - TODO: break this out to separate function 
+ - In the environment vars get raw values from the SSLConnRec struct and format (using req pool) accordingly
+
+### Config item to enable
+
+Should probably create a configuration directive (could work at vhost or global level) to enable clienthello collection, by default skip collection of data.
 
 ### References
 
