@@ -28,8 +28,9 @@ How will data be represented?
 Handshake information is only available during handshake callback. mod_ssl already registers handshake callback for SNI.
 
  - Callback occurs in ssl_engine_kernel.c ssl_callback_ClientHello()
- - Add handshake information to SSLConnRec structure
-   - retrieve from conn via ssl_get_effective_config() ?
+ - Add handshake information to SSLConnRec structure? It is available during handshake callback?
+   - retrieve from sslconn via ssl_get_effective_config() or SSLConnRec *sslcon = myConnConfig(c) ?
+   - if not, handshake info has be stored against conn_rec?
 
 ### References
 
