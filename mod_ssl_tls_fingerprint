@@ -114,7 +114,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +    } else if (ssl && strEQ(var, "EXTENSION_IDS") && (clienthello_vars->extids_len > 0)) {
 +        //change this to appropriately print extids (16bit hex in network order like everythihng else?)
 +        value = apr_palloc(p, clienthello_vars->extids_len * 8 + 1);
-+        ap_bin2hex(clienthello_vars->extids_data, clienthello_vars->ciphers_len*4, value);
++        ap_bin2hex(clienthello_vars->extids_data, clienthello_vars->extids_len*4, value);
 +        return value;
 +    }
 +#endif
