@@ -10,9 +10,9 @@ Metadata Required:
       - https://docs.openssl.org/1.1.1/man3/SSL_get_version/#name
   - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS)
   - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS)
-  - Signature Algorithms
-  - EllipticCurve
-  - EllipticCurvePointFormat
+  - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS)
+  - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS)
+  - EllipticCurvePointFormat (SSL_CLIENTHELLO_EC_FORMATS)
   - ALPN
     - Expose as CSV of strings?
   - ~~SNI/Server_name~~ (Already in mod_ssl)
