@@ -9,14 +9,15 @@ Metadata Required:
     - Version already exposed in mod_ssl is version negotiated is different from that offered by the client in the client hello
       - https://docs.openssl.org/1.1.1/man3/SSL_get_version/#name
   - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS)
-  - SSLExtension (close, need to reformat: SSL_CLIENTHELLO_EXTENSION_IDS)
+  - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS)
   - Signature Algorithms
   - EllipticCurve
   - EllipticCurvePointFormat
   - ALPN
     - Expose as CSV of strings?
   - ~~SNI/Server_name~~ (Already in mod_ssl)
-  - Protocol (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp)
+  - ~~Protocol~~ (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp)
+  - Compression methods?
 
 How will data be represented? 
   - As hex of raw values (prefered approach)
