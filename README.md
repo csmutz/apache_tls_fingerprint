@@ -8,8 +8,8 @@ Metadata Required:
   - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) 
     - Version already exposed in mod_ssl is version negotiated is different from that offered by the client in the client hello
       - https://docs.openssl.org/1.1.1/man3/SSL_get_version/#name
-  - Ciphers (close, have ciphers_len printed)
-  - SSLExtension
+  - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS)
+  - SSLExtension (close, need to reformat: SSL_CLIENTHELLO_EXTENSION_IDS)
   - Signature Algorithms
   - EllipticCurve
   - EllipticCurvePointFormat
