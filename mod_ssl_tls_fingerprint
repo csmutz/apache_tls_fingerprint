@@ -87,7 +87,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      else if (ssl != NULL && strlen(var) > 18 && strcEQn(var, "CLIENT_CERT_CHAIN_", 18)) {
          sk = SSL_get_peer_cert_chain(ssl);
          result = ssl_var_lookup_ssl_cert_chain(p, sk, var+18);
-@@ -867,6 +871,39 @@
+@@ -867,6 +871,44 @@
      return result;
  }
  
@@ -97,6 +97,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +    char *value;
 +    SSL *ssl;
 +    modssl_clienthello_vars *clienthello_vars;
++    int i;
 +
 +    ssl = sslconn->ssl;
 +    clienthello_vars = sslconn->clienthello_vars;
@@ -113,8 +114,12 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +        //return apr_itoa(p, (int) clienthello_vars->ciphers_len);
 +    } else if (ssl && strEQ(var, "EXTENSION_IDS") && (clienthello_vars->extids_len > 0)) {
 +        //change this to appropriately print extids (16bit hex in network order like everythihng else?)
-+        value = apr_palloc(p, clienthello_vars->extids_len * 8 + 1);
-+        ap_bin2hex(clienthello_vars->extids_data, clienthello_vars->extids_len*4, value);
++        value = apr_palloc(p, clienthello_vars->extids_len * 4 + 1);
++        //ap_bin2hex(clienthello_vars->extids_data, clienthello_vars->extids_len*4, value);
++        for (i = 0; i < clienthello_vars->extids_len; i++)
++        {
++            snprintf(value + i * 4, 5, "%04x", (uint16_t) clienthello_vars->extids_data[i]);
++        }
 +        return value;
 +    }
 +#endif
