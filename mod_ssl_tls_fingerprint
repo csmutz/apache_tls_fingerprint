@@ -12,32 +12,58 @@ Last-Update: 2024-09-03 <YYYY-MM-DD, last update of the meta-information, option
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/modules/ssl/ssl_engine_kernel.c
 +++ b/modules/ssl/ssl_engine_kernel.c
-@@ -1515,6 +1515,8 @@
+@@ -1515,6 +1515,9 @@
      "SSL_SRP_USER",
      "SSL_SRP_USERINFO",
  #endif
 +    "SSL_CLIENTHELLO_VERSION",
 +    "SSL_CLIENTHELLO_CIPHERS",
++    "SSL_CLIENTHELLO_EXTENSION_IDS",
      NULL
  };
  
-@@ -2495,6 +2497,19 @@
+@@ -2440,6 +2443,34 @@
+ }
  
- give_up:
-     init_vhost(c, ssl, servername);
-+    
+ #if OPENSSL_VERSION_NUMBER >= 0x10101000L && !defined(LIBRESSL_VERSION_NUMBER)
++
++/*
++ * Copy data from clienthello for env vars use later
++ */
++static void copy_clienthello_vars(conn_rec *c, SSL *ssl)
++{
 +    SSLConnRec *sslcon;
 +    modssl_clienthello_vars *clienthello_vars;
 +    const unsigned char *data;
++    int *ids;
 +
 +    sslcon = myConnConfig(c);
 +    sslcon->clienthello_vars = apr_palloc(c->pool, sizeof(*clienthello_vars));
 +    clienthello_vars = sslcon->clienthello_vars;
-+    
++
 +    if (clienthello_vars) {
 +        clienthello_vars->ciphers_len = SSL_client_hello_get0_ciphers(ssl, &data);
 +        clienthello_vars->ciphers_data = apr_pmemdup(c->pool, data, clienthello_vars->ciphers_len);
++        
++        if (SSL_client_hello_get1_extensions_present(ssl, &ids, &clienthello_vars->extids_len) == 1) {
++            clienthello_vars->extids_data = apr_pmemdup(c->pool, ids, clienthello_vars->extids_len * sizeof(int));
++            OPENSSL_free(ids);
++        } 
++
++
 +    }
++}
++
+ /*
+  * This callback function is called when the ClientHello is received.
+  */
+@@ -2495,6 +2526,9 @@
+ 
+ give_up:
+     init_vhost(c, ssl, servername);
++    
++    copy_clienthello_vars(c, ssl);
++
      return SSL_CLIENT_HELLO_SUCCESS;
  }
  #endif /* OPENSSL_VERSION_NUMBER < 0x10101000L */
@@ -61,15 +87,13 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      else if (ssl != NULL && strlen(var) > 18 && strcEQn(var, "CLIENT_CERT_CHAIN_", 18)) {
          sk = SSL_get_peer_cert_chain(ssl);
          result = ssl_var_lookup_ssl_cert_chain(p, sk, var+18);
-@@ -867,6 +871,37 @@
+@@ -867,6 +871,39 @@
      return result;
  }
  
 +static char *ssl_var_lookup_ssl_clienthello(apr_pool_t *p, SSLConnRec *sslconn, char *var)
 +{
 +#if OPENSSL_VERSION_NUMBER >= 0x10101000L
-+    apr_size_t len;
-+    const unsigned char *buf;
 +    char *value;
 +    SSL *ssl;
 +    modssl_clienthello_vars *clienthello_vars;
@@ -82,12 +106,16 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +
 +    if (ssl && strEQ(var, "VERSION")) {
 +        return apr_itoa(p, SSL_client_version(ssl));
-+    } else if (ssl && strEQ(var, "CIPHERS")) {
-+        //len = SSL_client_hello_get0_ciphers(ssl, &buf);
-+        //value = apr_pcalloc(p, len * 2 + 1);
-+        //ap_bin2hex(buf, len, value);
-+        //return value;
-+        return apr_itoa(p, (int) clienthello_vars->ciphers_len);
++    } else if (ssl && strEQ(var, "CIPHERS") && (clienthello_vars->ciphers_len > 0)) {
++        value = apr_palloc(p, clienthello_vars->ciphers_len * 2 + 1);
++        ap_bin2hex(clienthello_vars->ciphers_data, clienthello_vars->ciphers_len, value);
++        return value;
++        //return apr_itoa(p, (int) clienthello_vars->ciphers_len);
++    } else if (ssl && strEQ(var, "EXTENSION_IDS") && (clienthello_vars->extids_len > 0)) {
++        //change this to appropriately print extids (16bit hex in network order like everythihng else?)
++        value = apr_palloc(p, clienthello_vars->extids_len * 8 + 1);
++        ap_bin2hex(clienthello_vars->extids_data, clienthello_vars->ciphers_len*4, value);
++        return value;
 +    }
 +#endif
 +    return NULL;
@@ -101,7 +129,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      MODSSL_SSL_CIPHER_CONST SSL_CIPHER *cipher;
 --- a/modules/ssl/ssl_private.h
 +++ b/modules/ssl/ssl_private.h
-@@ -583,6 +583,17 @@
+@@ -583,6 +583,20 @@
      SSL_SHUTDOWN_TYPE_ACCURATE
  } ssl_shutdown_type_e;
  
@@ -111,15 +139,18 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 + */
 +#if OPENSSL_VERSION_NUMBER >= 0x10101000L
 +typedef struct {
++    int hello;
 +    apr_size_t ciphers_len;
 +    const unsigned char *ciphers_data;
++    apr_size_t extids_len;
++    int *extids_data;
 +} modssl_clienthello_vars;
 +#endif
 +
  typedef struct {
      SSL *ssl;
      const char *client_dn;
-@@ -613,6 +624,10 @@
+@@ -613,6 +627,10 @@
      const char *cipher_suite; /* cipher suite used in last reneg */
      int service_unavailable;  /* thouugh we negotiate SSL, no requests will be served */
      int vhost_found;          /* whether we found vhost from SNI already */
