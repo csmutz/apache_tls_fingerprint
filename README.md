@@ -12,7 +12,7 @@ Metadata Required:
   - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS)
   - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS)
   - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS)
-  - EllipticCurvePointFormat (SSL_CLIENTHELLO_EC_FORMATS)
+  - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS)
   - ALPN
     - Expose as CSV of strings?
   - ~~SNI/Server_name~~ (Already in mod_ssl)
