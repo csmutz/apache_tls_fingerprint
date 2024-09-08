@@ -37,9 +37,15 @@ Handshake information is only available during handshake callback. mod_ssl alrea
 
 ### Config item to enable
 
-Should probably create a configuration directive (could work at vhost or global level) to enable clienthello collection, by default skip collection of data.
+Should probably create a configuration directive (could work at vhost or server level) to enable clienthello collection, by default skip collection of data.
 
-See StdEnvVars or ExportCertData of SSLOptions: https://httpd.apache.org/docs/current/mod/mod_ssl.html
+Plan is to have server or vhost level collection of client hello data. If it is collected, then add it to environment vars following same rules as STDenvvars.
+
+SSLSrvConfigRec -- this is were config needs to go
+
+SSLCompression, SSLSessionCacheTimeout are example directives.
+
+Access via: mySrvConfig(s) s is server_rec/sslconn->server
 
 ### References
 
