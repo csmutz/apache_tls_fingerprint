@@ -13,11 +13,12 @@ Metadata Required:
   - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS)
   - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS)
   - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS)
-  - ALPN
+  - ~~ALPN~~ (SSL_CLIENTHELLO_ALPN)
     - Expose as CSV of strings?
   - ~~SNI/Server_name~~ (Already in mod_ssl)
   - ~~Protocol~~ (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp)
-  - Compression methods?
+  - ~~Compression methods~~ (SSL_CLIENTHELLO_COMP_METHODS)
+  - Other fields or extensions?
 
 How will data be represented? 
   - As hex of raw values (prefered approach)
