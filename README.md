@@ -39,6 +39,8 @@ Handshake information is only available during handshake callback. mod_ssl alrea
 
 Should probably create a configuration directive (could work at vhost or global level) to enable clienthello collection, by default skip collection of data.
 
+See StdEnvVars or ExportCertData of SSLOptions: https://httpd.apache.org/docs/current/mod/mod_ssl.html
+
 ### References
 
 #### ja3 and ja4 attributes:
