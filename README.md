@@ -6,8 +6,6 @@ Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes n
 Metadata Required:
 
   - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) 
-    - Version already exposed in mod_ssl is version negotiated is different from that offered by the client in the client hello
-      - https://docs.openssl.org/1.1.1/man3/SSL_get_version/#name
   - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS)
   - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS)
   - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS)
@@ -31,10 +29,6 @@ How will data be represented?
 
 Handshake information is only available during handshake callback. mod_ssl already registers handshake callback for SNI.
 
- - During callback we allocate new modssl_clienthello_vars struct (using connection mem pool) that is child of SSLConnRec and populate raw values from SSL clienthello functions
-     - TODO: break this out to separate function 
- - In the environment vars get raw values from the SSLConnRec struct and format (using req pool) accordingly
-
 ### Config item to enable
 
 Should probably create a configuration directive (could work at vhost or server level) to enable clienthello collection, by default skip collection of data.
@@ -46,6 +40,12 @@ SSLSrvConfigRec -- this is were config needs to go
 SSLCompression, SSLSessionCacheTimeout are example directives.
 
 Access via: mySrvConfig(s) s is server_rec/sslconn->server
+
+### Testing
+
+ - Create simple scripts to confirm generation of ja3 and ja4
+ - statistical analysis, look for most important features/attributes
+ - test directive to disable/enable clienthello collection
 
 ### References
 
