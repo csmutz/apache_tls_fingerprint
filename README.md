@@ -14,7 +14,6 @@ Metadata Required:
   - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS)
   - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS)
   - ~~ALPN~~ (SSL_CLIENTHELLO_ALPN)
-    - Expose as CSV of strings?
   - ~~SNI/Server_name~~ (Already in mod_ssl)
   - ~~Protocol~~ (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp)
   - ~~Compression methods~~ (SSL_CLIENTHELLO_COMP_METHODS)
@@ -22,8 +21,10 @@ Metadata Required:
 
 How will data be represented? 
   - As hex of raw values (prefered approach)
+    - ALPN as CSV of string since raw value is string
   - dash separate list, ja3 style (this is a bunch of extra work, for little benefit)
-  - Remove grease or not? Use of grease seemes like the sort of attribute you want for fingerprinting. Expose all data, including grease, and let the user of the metadata decide how they want to use it.
+  - Remove grease or not?
+    - Use of grease seemes like the sort of attribute you want for fingerprinting. Expose all data, including grease, and let the user of the metadata decide how they want to use it.
 
 ### Access to Handshake information
 
