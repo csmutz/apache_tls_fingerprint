@@ -42,6 +42,8 @@ SSLCompression, SSLSessionCacheTimeout are example directives.
 
 Access via: mySrvConfig(s) s is server_rec/sslconn->server
 
+See also modules/ssl/mod_ssl.c,  SSL_CMD_SRV(Compression
+
 ### Testing
 
  - Create simple scripts to confirm generation of ja3 and ja4
