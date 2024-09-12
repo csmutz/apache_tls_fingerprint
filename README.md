@@ -15,8 +15,9 @@ Metadata Required:
   - ~~SNI/Server_name~~ (Already in mod_ssl)
   - ~~Protocol~~ (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp)
   - ~~Compression methods~~ (SSL_CLIENTHELLO_COMP_METHODS)
+  - ~~Supported versions~~ ()
   - Other fields or extensions?
-    - Supported versions?
+  
 
 How will data be represented? 
   - As hex of raw values (prefered approach)
