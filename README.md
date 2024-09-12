@@ -73,3 +73,9 @@ https://wiki.debian.org/UsingQuilt
 ```
 quilt top - show current patchfile
 ```
+#### Flask demo app
+
+https://asdkazmi.medium.com/deploying-flask-app-with-wsgi-and-apache-server-on-ubuntu-20-04-396607e0e40f
+
+https://flask.palletsprojects.com/en/2.0.x/deploying/mod_wsgi/
+
