@@ -108,7 +108,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      else if (ssl != NULL && strlen(var) > 18 && strcEQn(var, "CLIENT_CERT_CHAIN_", 18)) {
          sk = SSL_get_peer_cert_chain(ssl);
          result = ssl_var_lookup_ssl_cert_chain(p, sk, var+18);
-@@ -867,6 +871,74 @@
+@@ -867,6 +871,79 @@
      return result;
  }
  
@@ -141,28 +141,33 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +            snprintf(value + i * 4, 5, "%04x", (uint16_t) clienthello_vars->extids_data[i]);
 +        }
 +        return value;
-+    } else if (ssl && strEQ(var, "EC_GROUPS") && (clienthello_vars->ecgroups_len > 0)) {
++    } else if (ssl && strEQ(var, "EC_GROUPS") && (clienthello_vars->ecgroups_len > 2)) {
 +        value = apr_palloc(p, clienthello_vars->ecgroups_len * 2 + 1 - 2);
 +        ap_bin2hex(clienthello_vars->ecgroups_data + 2, clienthello_vars->ecgroups_len - 2, value);
 +        return value;
-+    } else if (ssl && strEQ(var, "EC_FORMATS") && (clienthello_vars->ecformats_len > 0)) {
++    } else if (ssl && strEQ(var, "EC_FORMATS") && (clienthello_vars->ecformats_len > 1)) {
 +        value = apr_palloc(p, clienthello_vars->ecformats_len * 2 + 1 - 1);
 +        ap_bin2hex(clienthello_vars->ecformats_data + 1, clienthello_vars->ecformats_len - 1, value);
 +        return value;
-+    } else if (ssl && strEQ(var, "SIG_ALGOS") && (clienthello_vars->sigalgos_len > 0)) {
++    } else if (ssl && strEQ(var, "SIG_ALGOS") && (clienthello_vars->sigalgos_len > 2)) {
 +        value = apr_palloc(p, clienthello_vars->sigalgos_len * 2 + 1 - 2);
 +        ap_bin2hex(clienthello_vars->sigalgos_data + 2, clienthello_vars->sigalgos_len - 2, value);
 +        return value;
-+    } else if (ssl && strEQ(var, "ALPN") && (clienthello_vars->alpn_len > 0)) {
-+        i = clienthello_vars->alpn_data[2];
-+        value = apr_pmemdup(p, clienthello_vars->alpn_data + 3, clienthello_vars->alpn_len + 1 - 3);
-+        //convert lengths into commas
-+        while(i < clienthello_vars->alpn_len - 3) {
-+            j = i;
-+            i += (unsigned char)value[i];
-+            i++;
-+            value[j] = 0x2c;
++    } else if (ssl && strEQ(var, "ALPN") && (clienthello_vars->alpn_len > 3)) {
++        value = apr_palloc(p, clienthello_vars->alpn_len + 1 - 3);
++        j = clienthello_vars->alpn_data[2];
++        for (i = 0; i < clienthello_vars->alpn_len - 3; i++)
++        {
++            if (i == j) {
++                //replace len with comma
++                j += (unsigned char)clienthello_vars->alpn_data[i + 3];
++                j++;
++                value[i] = 0x2c;
++            } else {
++                value[i] = clienthello_vars->alpn_data[i + 3];
++            }
 +        }
++        value[i] = '\0';
 +        return value;
 +    } else if (ssl && strEQ(var, "COMP_METHODS") && (clienthello_vars->compmethods_len > 0)) {
 +        value = apr_palloc(p, clienthello_vars->compmethods_len * 2 + 1);
