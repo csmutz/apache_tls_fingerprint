@@ -49,7 +49,7 @@ See also modules/ssl/mod_ssl.c,  SSL_CMD_SRV(Compression
 ### Testing
 
  - ~~Create simple scripts to confirm generation of ja3 and ja4~~
-   -  flask script prints values and ja3/ja4
+   -  see flask scripts that print CLIENTHELLO values and derived ja3/ja4
  - statistical analysis, look for most important features/attributes
  - test directive to disable/enable clienthello collection
  - ~~Logging~~
