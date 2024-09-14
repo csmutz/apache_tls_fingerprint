@@ -1,5 +1,6 @@
 from flask import Flask, request
 import json
+import ja
 
 app = Flask(__name__)
 
@@ -9,6 +10,8 @@ def hello_world():
     data = {}
     for v in vars:
         data[v] = request.environ.get(v)
+    data['ja3'] = ja.ja3(data)
+    data['ja4'] = ja.ja4(data)
     return json.dumps(data)
 
 if __name__ == '__main__':
