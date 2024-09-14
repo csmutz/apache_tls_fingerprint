@@ -58,7 +58,7 @@ See also modules/ssl/mod_ssl.c,  SSL_CMD_SRV(Compression
 ```
         ErrorLog ${APACHE_LOG_DIR}/error.log
         #CustomLog ${APACHE_LOG_DIR}/access.log combined
-        LogFormat "%v %p %h %{remote}p %l %u %t %{sec}t.%{usec_frac}t %D \"%r\" %>s %I %O \"%{Host}i \"%{Referer}i\" \"%{User Agent}i\" \"%{Connection}i\" \"%{Accept-Language}i\" \"%{Accept-Encoding}i\" \"%{Accept}i\" \"%{X-Forwarded-For}i\" \"%{Cookie}i\" \"%{Authorization}i\" \"%{SSL_CLIENTHELLO_VERSION}x\" \"%{SSL_CLIENTHELLO_SUPPORTED_VERSIONS}x\" \"%{SSL_CLIENTHELLO_CIPHERS}x\" \"%{SSL_CLIENTHELLO_EXTENSION_IDS}x\" \"%{SSL_CLIENTHELLO_SIG_ALGOS}x\" \"%{SSL_CLIENTHELLO_EC_GROUPS}x\" \"%{SSL_CLIENTHELLO_EC_FORMATS}x\" \"%{SSL_CLIENTHELLO_ALPN}x\"" extended
+        LogFormat "%v %p %h %{remote}p %l %u %t %{sec}t.%{usec_frac}t %D \"%r\" %>s %I %O \"%{Host}i\" \"%{Referer}i\" \"%{User-Agent}i\" \"%{Connection}i\" \"%{Accept-Language}i\" \"%{Accept-Encoding}i\" \"%{Accept}i\" \"%{X-Forwarded-For}i\" \"%{Cookie}i\" \"%{Authorization}i\" %{SSL_CLIENTHELLO_VERSION}x %{SSL_CLIENTHELLO_SUPPORTED_VERSIONS}x %{SSL_CLIENTHELLO_CIPHERS}x %{SSL_CLIENTHELLO_EXTENSION_IDS}x %{SSL_CLIENTHELLO_SIG_ALGOS}x %{SSL_CLIENTHELLO_EC_GROUPS}x %{SSL_CLIENTHELLO_EC_FORMATS}x %{SSL_CLIENTHELLO_ALPN}x" extended
         CustomLog ${APACHE_LOG_DIR}/access.log extended
 ```
 
