@@ -9,6 +9,7 @@ Metadata Required:
   - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS)
   - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS)
     - OpenSSL doesn't report grease here so for these values grease is always stripped. Possibly other extensions unknown to OpenSSL are stripped?
+    - Test SSL_client_hello_get_extension_order to see if it return grease values too (OpenSSL >= 3.2 only)
   - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS)
   - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS)
   - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS)
