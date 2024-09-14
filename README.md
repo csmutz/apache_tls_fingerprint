@@ -8,6 +8,7 @@ Metadata Required:
   - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) 
   - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS)
   - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS)
+    - OpenSSL doesn't report grease here so for these values grease is always stripped. Possibly other extensions unknown to OpenSSL are stripped?
   - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS)
   - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS)
   - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS)
@@ -46,11 +47,21 @@ See also modules/ssl/mod_ssl.c,  SSL_CMD_SRV(Compression
 
 ### Testing
 
- - Create simple scripts to confirm generation of ja3 and ja4
+ - ~~Create simple scripts to confirm generation of ja3 and ja4~~
+   -  flask script prints values and ja3/ja4
  - statistical analysis, look for most important features/attributes
  - test directive to disable/enable clienthello collection
+ - ~~Logging~~
+   - The following will log values needed for fingerprinting. Replace combined log format with extended in sites-enabled/default-ssl.conf.
 
-### References
+```
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        #CustomLog ${APACHE_LOG_DIR}/access.log combined
+        LogFormat "%v %p %h %{remote}p %l %u %t %{sec}t.%{usec_frac}t %D \"%r\" %>s %I %O \"%{Host}i \"%{Referer}i\" \"%{User Agent}i\" \"%{Connection}i\" \"%{Accept-Language}i\" \"%{Accept-Encoding}i\" \"%{Accept}i\" \"%{X-Forwarded-For}i\" \"%{Cookie}i\" \"%{Authorization}i\" \"%{SSL_CLIENTHELLO_VERSION}x\" \"%{SSL_CLIENTHELLO_SUPPORTED_VERSIONS}x\" \"%{SSL_CLIENTHELLO_CIPHERS}x\" \"%{SSL_CLIENTHELLO_EXTENSION_IDS}x\" \"%{SSL_CLIENTHELLO_SIG_ALGOS}x\" \"%{SSL_CLIENTHELLO_EC_GROUPS}x\" \"%{SSL_CLIENTHELLO_EC_FORMATS}x\" \"%{SSL_CLIENTHELLO_ALPN}x\"" extended
+        CustomLog ${APACHE_LOG_DIR}/access.log extended
+```
+
+### References/Notes
 
 #### ja3 and ja4 attributes:
 
