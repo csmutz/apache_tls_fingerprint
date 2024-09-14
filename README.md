@@ -21,7 +21,7 @@ Metadata Required:
 
 How will data be represented? 
   - As hex of raw values (prefered approach)
-    - ALPN as CSV of string since raw value is string
+    - ~~ALPN as CSV of string since raw value is string~~ No, just do all as hex blobs. grease can make alpn non-ascii, future alpns may not be ascii
   - dash separate list, ja3 style (this is a bunch of extra work, for little benefit)
   - Remove grease or not?
     - Use of grease seemes like the sort of attribute you want for fingerprinting. Expose all data, including grease, and let the user of the metadata decide how they want to use it.
