@@ -1,5 +1,5 @@
 # apache_tls_fingerprint
-Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes necessary for ja3 and ja4
+Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes necessary for ja3 and ja4 and optimal fingerprints
 
 ## Notes
 
