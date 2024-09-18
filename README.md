@@ -5,20 +5,22 @@ Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes n
 
 Metadata Required:
 
-  - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) 
-  - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS)
-  - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS)
+  - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) (ja3)
+  - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS) (ja3, ja4, optimal)
+  - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS) (ja3, ja4, optimal)
     - OpenSSL doesn't report grease here so for these values grease is always stripped. Possibly other extensions unknown to OpenSSL are stripped?
     - Test SSL_client_hello_get_extension_order to see if it return grease values too (OpenSSL >= 3.2 only)
-  - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS)
-  - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS)
-  - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS)
-  - ~~ALPN~~ (SSL_CLIENTHELLO_ALPN)
-  - ~~SNI/Server_name~~ (Already in mod_ssl)
-  - ~~Protocol~~ (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp)
-  - ~~Compression methods~~ (SSL_CLIENTHELLO_COMP_METHODS)
-  - ~~Supported versions~~ (SSL_CLIENTHELLO_SUPPORTED_VERSIONS)
+  - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS) (ja3, ja4)
+  - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS) (ja3, optimal))
+  - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS) (ja3)
+  - ~~ALPN~~ (SSL_CLIENTHELLO_ALPN) (ja4)
+  - ~~SNI/Server_name~~ (Already in mod_ssl) (ja4)
+  - ~~Protocol~~ (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp) (ja4)
+  - ~~Compression methods~~ (SSL_CLIENTHELLO_COMP_METHODS) (NA)
+    - Remove as superfluous?, basically no clients advertise compression methods anymore, not used in ja3 or ja4 
+  - ~~Supported versions~~ (SSL_CLIENTHELLO_SUPPORTED_VERSIONS) (optimal)
   - Other fields or extensions?
+    - supported key exchange methods (NA) -- not used, no need
   
 
 How will data be represented? 
@@ -26,7 +28,7 @@ How will data be represented?
     - ~~ALPN as CSV of string since raw value is string~~ No, just do all as hex blobs. grease can make alpn non-ascii, future alpns may not be ascii
   - dash separate list, ja3 style (this is a bunch of extra work, for little benefit)
   - Remove grease or not?
-    - Use of grease seemes like the sort of attribute you want for fingerprinting. Expose all data, including grease, and let the user of the metadata decide how they want to use it.
+    - Most fingerprinting tools ignore grease
 
 ### Access to Handshake information
 
