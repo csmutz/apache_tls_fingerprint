@@ -53,6 +53,7 @@ See also modules/ssl/mod_ssl.c,  SSL_CMD_SRV(Compression
  - ~~Create simple scripts to confirm generation of ja3 and ja4~~
    -  see flask scripts that print CLIENTHELLO values and derived ja3/ja4
  - statistical analysis, look for most important features/attributes
+   - consider optimal fingerprint based on ciphers, extensions, supported groups and supported versions OR apln. 
  - test directive to disable/enable clienthello collection
  - ~~Logging~~
    - The following will log values needed for fingerprinting. Replace combined log format with extended in sites-enabled/default-ssl.conf.
