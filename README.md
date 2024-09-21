@@ -36,6 +36,8 @@ Handshake information is only available during handshake callback. mod_ssl alrea
 
 ### Config item to enable
 
+SSLClientHelloVars: server, virtualhost
+
 Should probably create a configuration directive (could work at vhost or server level) to enable clienthello collection, by default skip collection of data.
 
 Plan is to have server or vhost level collection of client hello data. If it is collected, then add it to environment vars following same rules as STDenvvars.
