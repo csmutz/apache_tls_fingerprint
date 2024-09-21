@@ -50,6 +50,13 @@ Access via: mySrvConfig(s) s is server_rec/sslconn->server
 
 See also modules/ssl/mod_ssl.c,  SSL_CMD_SRV(Compression
 
+### Questions
+
+ - Should config item always exist (even if OpenSSL version doesn't support clienthello collection)
+   - yes, always there
+ - Should Env Vars always exist
+   - yes, may not be filled
+
 ### Testing
 
  - ~~Create simple scripts to confirm generation of ja3 and ja4~~
