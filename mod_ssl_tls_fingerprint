@@ -18,12 +18,12 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  #endif
 +    "SSL_CLIENTHELLO_VERSION",
 +    "SSL_CLIENTHELLO_CIPHERS",
-+    "SSL_CLIENTHELLO_EXTENSION_IDS",
-+    "SSL_CLIENTHELLO_EC_GROUPS",
++    "SSL_CLIENTHELLO_EXTENSIONS",
++    "SSL_CLIENTHELLO_GROUPS",
 +    "SSL_CLIENTHELLO_EC_FORMATS",
 +    "SSL_CLIENTHELLO_SIG_ALGOS",
 +    "SSL_CLIENTHELLO_ALPN",
-+    "SSL_CLIENTHELLO_SUPPORTED_VERSIONS",
++    "SSL_CLIENTHELLO_VERSIONS",
      NULL
  };
  
@@ -139,14 +139,14 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +        value = apr_palloc(p, clienthello_vars->ciphers_len * 2 + 1);
 +        ap_bin2hex(clienthello_vars->ciphers_data, clienthello_vars->ciphers_len, value);
 +        return value;
-+    } else if (ssl && strEQ(var, "EXTENSION_IDS") && (clienthello_vars->extids_len > 0)) {
++    } else if (ssl && strEQ(var, "EXTENSIONS") && (clienthello_vars->extids_len > 0)) {
 +        value = apr_palloc(p, clienthello_vars->extids_len * 4 + 1);
 +        for (i = 0; i < clienthello_vars->extids_len; i++)
 +        {
 +            snprintf(value + i * 4, 5, "%04x", (uint16_t) clienthello_vars->extids_data[i]);
 +        }
 +        return value;
-+    } else if (ssl && strEQ(var, "EC_GROUPS") && (clienthello_vars->ecgroups_len > 2)) {
++    } else if (ssl && strEQ(var, "GROUPS") && (clienthello_vars->ecgroups_len > 2)) {
 +        value = apr_palloc(p, clienthello_vars->ecgroups_len * 2 + 1 - 2);
 +        ap_bin2hex(clienthello_vars->ecgroups_data + 2, clienthello_vars->ecgroups_len - 2, value);
 +        return value;
@@ -162,7 +162,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +        value = apr_palloc(p, clienthello_vars->alpn_len * 2 + 1 - 2);
 +        ap_bin2hex(clienthello_vars->alpn_data + 2, clienthello_vars->alpn_len - 2, value);
 +        return value;
-+    } else if (ssl && strEQ(var, "SUPPORTED_VERSIONS") && (clienthello_vars->versions_len > 0)) {
++    } else if (ssl && strEQ(var, "VERSIONS") && (clienthello_vars->versions_len > 0)) {
 +        value = apr_palloc(p, clienthello_vars->versions_len * 2 + 1 - 1);
 +        ap_bin2hex(clienthello_vars->versions_data + 1, clienthello_vars->versions_len - 1, value);
 +        return value;
