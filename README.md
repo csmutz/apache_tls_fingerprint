@@ -6,7 +6,7 @@ Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes n
 Adds the following ENV variables
   - SSL_CLIENTHELLO_VERSION (ja3)
   - SSL_CLIENTHELLO_CIPHERS (ja3, ja4, optimal)
-  - SSL_CLIENTHELLO_EXTENSIONS) (ja3, ja4, optimal)
+  - SSL_CLIENTHELLO_EXTENSIONS (ja3, ja4, optimal)
     - OpenSSL doesn't report grease here so for these values grease is always stripped. Possibly other extensions unknown to OpenSSL are stripped?
     - Test SSL_client_hello_get_extension_order to see if it return grease values too (OpenSSL >= 3.2 only)
   - SSL_CLIENTHELLO_SIG_ALGOS (ja3, ja4)
