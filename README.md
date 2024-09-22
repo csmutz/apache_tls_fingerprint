@@ -3,25 +3,17 @@ Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes n
 
 ## Notes
 
-Metadata Required:
-
-  - ~~SSLVersion~~ (SSL_CLIENTHELLO_VERSION) (ja3)
-  - ~~Ciphers~~ (SSL_CLIENTHELLO_CIPHERS) (ja3, ja4, optimal)
-  - ~~SSLExtension~~ (SSL_CLIENTHELLO_EXTENSION_IDS) (ja3, ja4, optimal)
+Adds the following ENV variables
+  - SSL_CLIENTHELLO_VERSION (ja3)
+  - SSL_CLIENTHELLO_CIPHERS (ja3, ja4, optimal)
+  - SSL_CLIENTHELLO_EXTENSIONS) (ja3, ja4, optimal)
     - OpenSSL doesn't report grease here so for these values grease is always stripped. Possibly other extensions unknown to OpenSSL are stripped?
     - Test SSL_client_hello_get_extension_order to see if it return grease values too (OpenSSL >= 3.2 only)
-  - ~~Signature Algorithms~~ (SSL_CLIENTHELLO_SIG_ALGOS) (ja3, ja4)
-  - ~~EllipticCurve~~ (SSL_CLIENTHELLO_EC_GROUPS) (ja3, optimal))
-  - ~~EllipticCurvePointFormat~~ (SSL_CLIENTHELLO_EC_FORMATS) (ja3)
-  - ~~ALPN~~ (SSL_CLIENTHELLO_ALPN) (ja4)
-  - ~~SNI/Server_name~~ (Already in mod_ssl) (ja4)
-  - ~~Protocol~~ (tcp or quic) (presumably will be available through which quic is officially implemented on openssl/apache. For now, assume tcp) (ja4)
-  - ~~Compression methods~~ (SSL_CLIENTHELLO_COMP_METHODS) (NA)
-    - Remove as superfluous?, basically no clients advertise compression methods anymore, not used in ja3 or ja4 
-  - ~~Supported versions~~ (SSL_CLIENTHELLO_SUPPORTED_VERSIONS) (optimal)
-  - Other fields or extensions?
-    - supported key exchange methods (NA) -- not used, no need
-  
+  - SSL_CLIENTHELLO_SIG_ALGOS (ja3, ja4)
+  - SSL_CLIENTHELLO_GROUPS (ja3, optimal)
+  - SSL_CLIENTHELLO_EC_FORMATS (ja3)
+  - SSL_CLIENTHELLO_ALPN (ja4)
+  - SSL_CLIENTHELLO_VERSIONS (optimal)
 
 How will data be represented? 
   - As hex of raw values (prefered approach)
@@ -36,36 +28,14 @@ Handshake information is only available during handshake callback. mod_ssl alrea
 
 ### Config item to enable
 
-SSLClientHelloVars: server, virtualhost
+Added a new directive: SSLClientHelloVars (on, off) available in Server or Virtualhost context. This turns on collection and retension of ClientHello data for the whole connection.
 
-Should probably create a configuration directive (could work at vhost or server level) to enable clienthello collection, by default skip collection of data.
-
-Plan is to have server or vhost level collection of client hello data. If it is collected, then add it to environment vars following same rules as STDenvvars.
-
-SSLSrvConfigRec -- this is were config needs to go
-
-SSLCompression, SSLSessionCacheTimeout are example directives.
-
-Access via: mySrvConfig(s) s is server_rec/sslconn->server
-
-See also modules/ssl/mod_ssl.c,  SSL_CMD_SRV(Compression
+On a per-request basis, the StdEnvVars options dictate whether the ENV variables are exposed or not. If the ClientHello data wasn't collected, then these values will be null.
 
 ### Questions
 
- - Should config item always exist (even if OpenSSL version doesn't support clienthello collection)
-   - yes, always there
- - Should Env Vars always exist
-   - yes, may not be filled
 
-### Testing
-
- - ~~Create simple scripts to confirm generation of ja3 and ja4~~
-   -  see flask scripts that print CLIENTHELLO values and derived ja3/ja4
- - statistical analysis, look for most important features/attributes
-   - consider optimal fingerprint based on ciphers, extensions, supported groups and supported versions OR apln. 
- - test directive to disable/enable clienthello collection
- - ~~Logging~~
-   - The following will log values needed for fingerprinting. Replace combined log format with extended in sites-enabled/default-ssl.conf.
+### Logging Example
 
 ```
         ErrorLog ${APACHE_LOG_DIR}/error.log
