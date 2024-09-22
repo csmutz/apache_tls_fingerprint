@@ -71,15 +71,20 @@ def ja3(data):
     formats = ""
 
     if "SSL_CLIENTHELLO_VERSION" in data:
-        version = str(int(data["SSL_CLIENTHELLO_VERSION"],16))
+        if (data["SSL_CLIENTHELLO_VERSION"]):
+            version = str(int(data["SSL_CLIENTHELLO_VERSION"],16))
     if "SSL_CLIENTHELLO_CIPHERS" in data:
-        ciphers = unpack_ciphers(data["SSL_CLIENTHELLO_CIPHERS"])
-    if "SSL_CLIENTHELLO_EXTENSION_IDS" in data:
-        extensions = unpack_ciphers(data["SSL_CLIENTHELLO_EXTENSION_IDS"])
-    if "SSL_CLIENTHELLO_EC_GROUPS" in data:
-        groups = unpack_ciphers(data["SSL_CLIENTHELLO_EC_GROUPS"])
+        if (data["SSL_CLIENTHELLO_CIPHERS"]):
+            ciphers = unpack_ciphers(data["SSL_CLIENTHELLO_CIPHERS"])
+    if "SSL_CLIENTHELLO_EXTENSIONS" in data:
+        if (data["SSL_CLIENTHELLO_EXTENSIONS"]):
+            extensions = unpack_ciphers(data["SSL_CLIENTHELLO_EXTENSIONS"])
+    if "SSL_CLIENTHELLO_GROUPS" in data:
+        if (data["SSL_CLIENTHELLO_GROUPS"]):
+            groups = unpack_ciphers(data["SSL_CLIENTHELLO_GROUPS"])
     if "SSL_CLIENTHELLO_EC_FORMATS" in data:
-        formats = unpack_formats(data["SSL_CLIENTHELLO_EC_FORMATS"])
+        if (data["SSL_CLIENTHELLO_EC_FORMATS"]):
+            formats = unpack_formats(data["SSL_CLIENTHELLO_EC_FORMATS"])
 
     
     full_ja3 = "%s,%s,%s,%s,%s" %(version,ciphers,extensions,groups,formats)
@@ -96,43 +101,71 @@ def ja4(data):
     extensions_hash = "000000000000"
     
 
-    if "SSL_CLIENTHELLO_SUPPORTED_VERSIONS" in data:
-        versions = split_hex_4(data["SSL_CLIENTHELLO_SUPPORTED_VERSIONS"])
-        v = sorted(filter_grease(versions), reverse=True)[0]
-        if v in tls_versions:
-            version = tls_versions[v]
+    if "SSL_CLIENTHELLO_VERSIONS" in data:
+        if (data["SSL_CLIENTHELLO_VERSIONS"]):
+            versions = split_hex_4(data["SSL_CLIENTHELLO_VERSIONS"])
+            v = sorted(filter_grease(versions), reverse=True)[0]
+            if v in tls_versions:
+                version = tls_versions[v]
     if "SSL_CLIENTHELLO_CIPHERS" in data:
-        ciphers = split_hex_4(data["SSL_CLIENTHELLO_CIPHERS"])
-        ciphers_filtered = filter_grease(ciphers)
-        cipher_hash = hashlib.sha256((",".join(sorted(ciphers_filtered))).encode()).hexdigest()[0:12]
-    if "SSL_CLIENTHELLO_EXTENSION_IDS" in data:
-        extensions = split_hex_4(data["SSL_CLIENTHELLO_EXTENSION_IDS"])
-        if "0000" in extensions:
-            sni = "d"
-        extensions_filtered = filter_grease(extensions)
-        extensions_for_hash = ",".join(sorted(filter_extensions_ja4(extensions_filtered)))
-        #print(extensions_for_hash)
-        if "SSL_CLIENTHELLO_SIG_ALGOS" in data:
-            algos = split_hex_4(data["SSL_CLIENTHELLO_SIG_ALGOS"])
-            algos_for_hash = ",".join(filter_grease(algos))
-            #print(algos_for_hash)
-            extensions_hash = hashlib.sha256(("%s_%s" % (extensions_for_hash,algos_for_hash)).encode()).hexdigest()[0:12]
+        if (data["SSL_CLIENTHELLO_CIPHERS"]):
+            ciphers = split_hex_4(data["SSL_CLIENTHELLO_CIPHERS"])
+            ciphers_filtered = filter_grease(ciphers)
+            ciphers_hash = hashlib.sha256((",".join(sorted(ciphers_filtered))).encode()).hexdigest()[0:12]
+    if "SSL_CLIENTHELLO_EXTENSIONS" in data:
+        if (data["SSL_CLIENTHELLO_EXTENSIONS"]):
+            extensions = split_hex_4(data["SSL_CLIENTHELLO_EXTENSIONS"])
+            if "0000" in extensions:
+                sni = "d"
+            extensions_filtered = filter_grease(extensions)
+            extensions_for_hash = ",".join(sorted(filter_extensions_ja4(extensions_filtered)))
+            if "SSL_CLIENTHELLO_SIG_ALGOS" in data:
+                if (data["SSL_CLIENTHELLO_SIG_ALGOS"]):
+                    algos = split_hex_4(data["SSL_CLIENTHELLO_SIG_ALGOS"])
+                    algos_for_hash = ",".join(filter_grease(algos))
+                    extensions_hash = hashlib.sha256(("%s_%s" % (extensions_for_hash,algos_for_hash)).encode()).hexdigest()[0:12]
 
     if "SSL_CLIENTHELLO_ALPN" in data:
-        alpn_raw = data["SSL_CLIENTHELLO_ALPN"]
-        offset = int(alpn_raw[0:2],16)
-        alpn = "%s%s" % (chr(int(alpn_raw[2:4],16)),chr(int(alpn_raw[(offset * 2):(offset * 2 + 2)],16)))
+        if (data["SSL_CLIENTHELLO_ALPN"]):
+            alpn_raw = data["SSL_CLIENTHELLO_ALPN"]
+            offset = int(alpn_raw[0:2],16)
+            alpn = "%s%s" % (chr(int(alpn_raw[2:4],16)),chr(int(alpn_raw[(offset * 2):(offset * 2 + 2)],16)))
 
-    return "t%s%s%02i%02i%s_%s_%s" % (version,sni,len(ciphers_filtered),len(extensions_filtered),alpn,cipher_hash,extensions_hash)
+    return "t%s%s%02i%02i%s_%s_%s" % (version,sni,len(ciphers_filtered),len(extensions_filtered),alpn,ciphers_hash,extensions_hash)
 
+def optimal(data):
+    versions_count = 0
+    ciphers_count = 0
+    groups_count = 0
+    extensions_count = 0
+
+    if "SSL_CLIENTHELLO_VERSIONS" in data:
+        if (data["SSL_CLIENTHELLO_VERSIONS"]):
+            versions = split_hex_4(data["SSL_CLIENTHELLO_VERSIONS"])
+            versions_count = len(filter_grease(versions))
+    if "SSL_CLIENTHELLO_CIPHERS" in data:
+        if (data["SSL_CLIENTHELLO_CIPHERS"]):
+            ciphers = split_hex_4(data["SSL_CLIENTHELLO_CIPHERS"])
+            ciphers_count = len(filter_grease(ciphers))
+    if "SSL_CLIENTHELLO_EXTENSIONS" in data:
+        if (data["SSL_CLIENTHELLO_EXTENSIONS"]):
+            extensions = split_hex_4(data["SSL_CLIENTHELLO_EXTENSIONS"])
+            extensions_count = len(filter_grease(extensions))
+    if "SSL_CLIENTHELLO_GROUPS" in data:
+        if (data["SSL_CLIENTHELLO_GROUPS"]):
+            groups = split_hex_4(data["SSL_CLIENTHELLO_GROUPS"])
+            groups_count = len(filter_grease(groups))
+
+    return "%i,%i,%i,%i" % (versions_count,ciphers_count,groups_count,extensions_count)
 
 def main():
     with open(sys.argv[1]) as f:
         data = json.load(f)
     print("ja3: %s" % (ja3(data)))
     print("ja4: %s" % (ja4(data)))
+    print("opt: %s" % (optimal(data)))
+    
 
-        
 
 if __name__ == '__main__':
     main()
