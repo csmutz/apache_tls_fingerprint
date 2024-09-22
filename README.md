@@ -1,5 +1,5 @@
 # apache_tls_fingerprint
-Expose TLS fingerprint metadata in apache mod_ssl. Try to cover all attributes necessary for ja3 and ja4 and optimal fingerprints
+Expose TLS fingerprint metadata in apache mod_ssl. Cover all attributes necessary for ja3, ja4, and optimal fingerprints.
 
 ## Notes
 
@@ -22,20 +22,11 @@ How will data be represented?
   - Remove grease or not?
     - Most fingerprinting tools ignore grease
 
-### Access to Handshake information
-
-Handshake information is only available during handshake callback. mod_ssl already registers handshake callback for SNI.
-
 ### Config item to enable
 
 Added a new directive: SSLClientHelloVars (on, off) available in Server or Virtualhost context. This turns on collection and retension of ClientHello data for the whole connection.
 
 On a per-request basis, the StdEnvVars options dictate whether the ENV variables are exposed or not. If the ClientHello data wasn't collected, then these values will be null.
-
-### Questions
-
-
-### Example config
 
 Add the following lines to /etc/apache2/sites-enabled/default-ssl.conf (inside the virtualhost section)
 
