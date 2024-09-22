@@ -27,7 +27,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      NULL
  };
  
-@@ -2440,11 +2448,52 @@
+@@ -2440,11 +2448,51 @@
  }
  
  #if OPENSSL_VERSION_NUMBER >= 0x10101000L && !defined(LIBRESSL_VERSION_NUMBER)
@@ -43,7 +43,6 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +    int *ids;
 +
 +    sslcon = myConnConfig(c);
-+    sslcon->clienthello_vars = NULL;
 +
 +    sslcon->clienthello_vars = apr_palloc(c->pool, sizeof(*clienthello_vars));
 +    clienthello_vars = sslcon->clienthello_vars;
@@ -80,7 +79,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      char *servername = NULL;
      conn_rec *c = (conn_rec *)SSL_get_app_data(ssl);
      const unsigned char *pos;
-@@ -2495,6 +2544,12 @@
+@@ -2495,6 +2543,12 @@
  
  give_up:
      init_vhost(c, ssl, servername);
