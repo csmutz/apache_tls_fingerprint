@@ -24,6 +24,19 @@ How will data be represented?
   - Remove grease or not?
     - Most fingerprinting tools ignore grease
 
+### Pull Request Text
+
+mod_ssl: ClientHello variable collection
+
+This patch implements collection of variables from the ClientHello which are later made available in the same manner as the other the environment variables of mod_ssl. A new directive, SSLClientHelloVars, enables collection of the raw variables during the clienthello callback which are then available to be formated and provided as environment variables for all the requests in that connection, subject to the standard StdEnvVars functionality. If SSLClientHelloVars is not enabled or if openssl prior to 1.1.1 is used, this options should have little impact--no clienthello information is collected. The environment variables are populated with null if openssl < 1.1.1.1 is used or SSLClientHelloVars is not set to on.
+
+The ClientHello variables are provided as hex encoded data the same as the raw network protocol/what is returned from openssl.
+
+This has been tested on ubuntu 24.10 apache 2.4.62/openssl 3.3.1 verifying correct operation of the config directive when default, set to off, and set to on. The variables have been tested in the context of both environment variables for cgi scripts and CustomLog entries. The data has been used to succesfully generate ja3 and ja4 fingerprints for a small number of common clients (compared to zeek implementation).
+
+This patch complements my prior pull request, #477. 
+
+
 ### Config item to enable
 
 Added a new directive: SSLClientHelloVars (on, off) available in Server or Virtualhost context. This turns on collection and retension of ClientHello data for the whole connection.
