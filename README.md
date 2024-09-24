@@ -1,6 +1,8 @@
 # apache_tls_fingerprint
 Expose TLS fingerprint metadata in apache mod_ssl. Cover all attributes necessary for ja3, ja4, and optimal fingerprints.
 
+Optimal is a fingerprint created for testing here that uses the length of the 4 fields and is superior to ja3 or ja4 in a most ways: separates the same from different software well, is very compact, is transparent, and works with many data analysis methods. Optimal is probably a misnomer (minimal is probably a better name). This fingerprint is not widely used (nor is it being proposed for general use--ironically it probably is not actually optimal).
+
 ## Notes
 
 Adds the following ENV variables
