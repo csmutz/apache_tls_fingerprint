@@ -27,7 +27,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      NULL
  };
  
-@@ -2440,6 +2448,87 @@
+@@ -2440,6 +2448,88 @@
  }
  
  #if OPENSSL_VERSION_NUMBER >= 0x10101000L && !defined(LIBRESSL_VERSION_NUMBER)
@@ -63,8 +63,9 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +    } else
 +    {
 +        clienthello_vars->extids_len = 0;
-+        clienthello_vars->extids_data = NULL;
 +    }
++    if (clienthello_vars->extids_len == 0)
++        clienthello_vars->extids_data = NULL;
 +
 +    if (SSL_client_hello_get0_ext(ssl, TLSEXT_TYPE_supported_groups, &data, &clienthello_vars->ecgroups_len) == 1) {
 +        if (clienthello_vars->ecgroups_len > 0)
@@ -115,7 +116,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  /*
   * This callback function is called when the ClientHello is received.
   */
-@@ -2495,6 +2584,10 @@
+@@ -2495,6 +2585,10 @@
  
  give_up:
      init_vhost(c, ssl, servername);
