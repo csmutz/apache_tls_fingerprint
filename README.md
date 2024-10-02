@@ -38,7 +38,11 @@ Follow instructions here for rebuilding apache2 debian package: https://www.linu
 
 #### Prebuilt packages for ubuntu 24.10
 
-It's a really bad idea to install unsigned, binary packages from unofficial sources. Simply download and install the provided .deb files with dpkg -i.
+It's a really bad idea to install unsigned, binary packages from unofficial sources. See debs directory.
+
+#### Example Flask App
+
+See flask directory for simple app that exposes these variables.
 
 ### Configuration
 
