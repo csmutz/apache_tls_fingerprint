@@ -5,7 +5,7 @@ Minimal is a fingerprint created for testing here that uses the length of the 4 
 
 The TLS fingerprint was accepted into apache upstream project: https://github.com/apache/httpd/commit/e9915b2bdb47a0dca4daa144a41a3c23edc3a59a
 
-This repo now also integrates the handshake RTT code so both can be evaluated together.
+This repo now also integrates the handshake RTT code so both can be evaluated together. Accepted into apache here (included in 2.5.1 relase): https://github.com/apache/httpd/commit/79990b070f2e5374e1add982342b1fa71f5d189e
 
 ## Notes
 
@@ -19,11 +19,10 @@ Adds the following ENV variables
   - SSL_CLIENTHELLO_ALPN (ja4)
   - SSL_CLIENTHELLO_VERSIONS (minimal)
 
-The handshake RTT is also integrated here
-  - SSL_HANDSHAKE_RTT 
+The ClientHello data is exposed as raw hex values (including grease) as would be seen in protocol/straight from Openssl.
 
-How will data be represented? 
-  - As hex of raw values including grease, etc.
+The handshake RTT is also integrated here
+  - SSL_HANDSHAKE_RTT (in ms)
 
 ## Demonstration
 A patch that can be applied to existing distribution packages is provided. Note that OpenSSL > 3.2 is needed for RTT calculation.
