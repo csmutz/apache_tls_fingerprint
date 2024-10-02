@@ -13,7 +13,7 @@ Adds the following ENV variables
   - SSL_CLIENTHELLO_VERSION (ja3)
   - SSL_CLIENTHELLO_CIPHERS (ja3, ja4, minimal)
   - SSL_CLIENTHELLO_EXTENSIONS (ja3, ja4, minimal)
-  - SSL_CLIENTHELLO_SIG_ALGOS (ja3, ja4)
+  - SSL_CLIENTHELLO_SIG_ALGOS (ja3, ja4, minimal)
   - SSL_CLIENTHELLO_GROUPS (ja3, minimal)
   - SSL_CLIENTHELLO_EC_FORMATS (ja3)
   - SSL_CLIENTHELLO_ALPN (ja4)
