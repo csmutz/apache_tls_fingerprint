@@ -1,5 +1,5 @@
 # apache_tls_fingerprint
-Expose TLS fingerprint metadata in apache mod_ssl. Cover all attributes necessary for ja3, ja4, and optimal fingerprints.
+Expose TLS fingerprint metadata in apache mod_ssl. Cover all attributes necessary for ja3, ja4, and minimal fingerprints.
 
 Minimal is a fingerprint created for testing here that uses the length of the 4 fields included and is an alternatives to ja3 or ja4 that is very compact, is transparent, and works with many data analysis methods (ex. determine similar fingerprints).
 
@@ -23,7 +23,7 @@ The handshake RTT is also integrated here
   - SSL_HANDSHAKE_RTT 
 
 How will data be represented? 
-  - As hex of raw values (prefered approach)
+  - As hex of raw values including grease, etc.
 
 ## Demonstration
 A patch that can be applied to existing distribution packages is provided. Note that OpenSSL > 3.2 is needed for RTT calculation.
