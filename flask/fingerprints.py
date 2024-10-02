@@ -163,7 +163,7 @@ def main():
         data = json.load(f)
     print("ja3: %s" % (ja3(data)))
     print("ja4: %s" % (ja4(data)))
-    print("opt: %s" % (optimal(data)))
+    print("min: %s" % (minimal(data)))
     
 
 
