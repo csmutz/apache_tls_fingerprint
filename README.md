@@ -1,7 +1,7 @@
 # TLS Fingerprinting in Apache (and TLS RTT)
 Expose TLS fingerprint metadata in apache mod_ssl. Cover all attributes necessary for ja3, ja4, and minimal fingerprints.
 
-Minimal is a fingerprint created for testing here that uses the length of the 4 fields included and is an alternatives to ja3 or ja4 that is very compact, is transparent, and works with many data analysis methods (ex. determine similar fingerprints).
+Minimal is a fingerprint created for testing here that uses the length of the 4 fields included (versions_count, ciphers_count, groups_count, extensions_count) and is an alternative to ja3 or ja4 that is very compact, is transparent, and works with many data analysis methods (ex. determine similar fingerprints).
 
 The TLS fingerprint was accepted into apache upstream project: https://github.com/apache/httpd/commit/e9915b2bdb47a0dca4daa144a41a3c23edc3a59a
 
