@@ -22,7 +22,9 @@ Adds the following ENV variables
 The ClientHello data is exposed as raw hex values (including grease) as would be seen in protocol/straight from Openssl.
 
 The handshake RTT is also integrated here
-  - SSL_HANDSHAKE_RTT (in ms)
+  - SSL_HANDSHAKE_RTT
+
+The TLS RTT is reported in microseconds.
 
 ## Demonstration
 A patch that can be applied to existing distribution packages is provided. Note that OpenSSL > 3.2 is needed for RTT calculation.
