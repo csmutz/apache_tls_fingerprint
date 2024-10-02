@@ -12,10 +12,11 @@ Last-Update: 2024-09-03 <YYYY-MM-DD, last update of the meta-information, option
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/modules/ssl/ssl_engine_kernel.c
 +++ b/modules/ssl/ssl_engine_kernel.c
-@@ -1515,6 +1515,14 @@
+@@ -1515,6 +1515,15 @@
      "SSL_SRP_USER",
      "SSL_SRP_USERINFO",
  #endif
++    "SSL_HANDSHAKE_RTT",
 +    "SSL_CLIENTHELLO_VERSION",
 +    "SSL_CLIENTHELLO_CIPHERS",
 +    "SSL_CLIENTHELLO_EXTENSIONS",
@@ -27,7 +28,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      NULL
  };
  
-@@ -2440,6 +2448,54 @@
+@@ -2440,6 +2449,54 @@
  }
  
  #if OPENSSL_VERSION_NUMBER >= 0x10101000L && !defined(LIBRESSL_VERSION_NUMBER)
@@ -82,7 +83,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  /*
   * This callback function is called when the ClientHello is received.
   */
-@@ -2495,6 +2551,10 @@
+@@ -2495,6 +2552,10 @@
  
  give_up:
      init_vhost(c, ssl, servername);
@@ -95,28 +96,43 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  #endif /* OPENSSL_VERSION_NUMBER < 0x10101000L */
 --- a/modules/ssl/ssl_engine_vars.c
 +++ b/modules/ssl/ssl_engine_vars.c
-@@ -53,6 +53,7 @@
+@@ -52,7 +52,9 @@
+ static char *ssl_var_lookup_ssl_cert_verify(apr_pool_t *p, SSLConnRec *sslconn);
  static char *ssl_var_lookup_ssl_cipher(apr_pool_t *p, SSLConnRec *sslconn, char *var);
  static void  ssl_var_lookup_ssl_cipher_bits(SSL *ssl, int *usekeysize, int *algkeysize);
++static char *ssl_var_lookup_ssl_handshake_rtt(apr_pool_t *p, SSL *ssl);
  static char *ssl_var_lookup_ssl_version(apr_pool_t *p, char *var);
 +static char *ssl_var_lookup_ssl_clienthello(apr_pool_t *p, SSLConnRec *sslconn, char *var);
  static char *ssl_var_lookup_ssl_compress_meth(SSL *ssl);
  
  static SSLConnRec *ssl_get_effective_config(conn_rec *c)
-@@ -387,6 +388,9 @@
+@@ -387,6 +389,12 @@
      else if (ssl != NULL && strlen(var) >= 6 && strcEQn(var, "CIPHER", 6)) {
          result = ssl_var_lookup_ssl_cipher(p, sslconn, var+6);
      }
++    else if(ssl != NULL && strcEQ(var, "HANDSHAKE_RTT")) {
++        result = ssl_var_lookup_ssl_handshake_rtt(p, ssl);
++    }
 +    else if (ssl != NULL && strlen(var) >= 12 && strcEQn(var, "CLIENTHELLO_", 12)) {
 +        result = ssl_var_lookup_ssl_clienthello(p, sslconn, var+12);
 +    }
      else if (ssl != NULL && strlen(var) > 18 && strcEQn(var, "CLIENT_CERT_CHAIN_", 18)) {
          sk = SSL_get_peer_cert_chain(ssl);
          result = ssl_var_lookup_ssl_cert_chain(p, sk, var+18);
-@@ -867,6 +871,65 @@
+@@ -867,6 +875,75 @@
      return result;
  }
  
++static char *ssl_var_lookup_ssl_handshake_rtt(apr_pool_t *p, SSL *ssl)
++{
++#if OPENSSL_VERSION_NUMBER >= 0x30200000L
++    apr_uint64_t rtt;
++    if (SSL_get_handshake_rtt(ssl, &rtt) > 0)
++        return apr_psprintf(p, "%" APR_UINT64_T_FMT, rtt);
++#endif
++    return NULL;
++}
++
 +static char *ssl_var_lookup_ssl_clienthello(apr_pool_t *p, SSLConnRec *sslconn, char *var)
 +{
 +#if OPENSSL_VERSION_NUMBER >= 0x10101000L && !defined(LIBRESSL_VERSION_NUMBER)
