@@ -17,7 +17,7 @@ Adds the following ENV variables
   - SSL_CLIENTHELLO_GROUPS (ja3, minimal)
   - SSL_CLIENTHELLO_EC_FORMATS (ja3)
   - SSL_CLIENTHELLO_ALPN (ja4)
-  - SSL_CLIENTHELLO_VERSIONS (minimal)
+  - SSL_CLIENTHELLO_VERSIONS (ja4, minimal)
 
 The ClientHello data is exposed as raw hex values (including grease) as would be seen in protocol/straight from Openssl.
 
